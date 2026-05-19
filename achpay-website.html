@@ -1,0 +1,3475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ACHPay.ai — Enterprise ACH Payment Infrastructure</title>
+<meta name="description" content="Replace expensive card rails with ACH. Never pay more than $5 per transaction. Built for CFOs, finance teams, and payment operations at scale.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0a0c10;
+  --ink-60: rgba(10,12,16,0.6);
+  --ink-30: rgba(10,12,16,0.3);
+  --paper: #f5f3ee;
+  --paper-dark: #eceae4;
+  --accent: #1a5cff;
+  --accent-light: #4a7dff;
+  --accent-dim: rgba(26,92,255,0.12);
+  --green: #00875a;
+  --green-light: #d4f0e3;
+  --amber: #c45200;
+  --amber-light: #fde8d4;
+  --border: rgba(10,12,16,0.10);
+  --border-strong: rgba(10,12,16,0.18);
+  --surface: #ffffff;
+  --surface-alt: #f8f7f3;
+  --radius-sm: 6px;
+  --radius: 12px;
+  --radius-lg: 20px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow: 0 4px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,0.10), 0 4px 16px rgba(0,0,0,0.06);
+  --font-display: 'Instrument Serif', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --nav-h: 68px;
+  --max-w: 1200px;
+  --page-pad: clamp(20px, 5vw, 80px);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── PAGES ── */
+.page { display: none; min-height: 100vh; }
+.page.active { display: block; }
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  height: var(--nav-h);
+  background: rgba(245,243,238,0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--page-pad);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.logo-mark {
+  width: 34px;
+  height: 34px;
+  background: var(--ink);
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.logo-mark::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #1a5cff 0%, #0a0c10 100%);
+  opacity: 0.9;
+}
+
+.logo-mark svg { position: relative; z-index: 1; }
+
+.logo-name {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+
+.logo-name span { color: var(--accent); }
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  list-style: none;
+}
+
+.nav-links a {
+  font-size: 14px;
+  font-weight: 450;
+  color: var(--ink-60);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s;
+  cursor: pointer;
+}
+
+.nav-links a:hover { color: var(--ink); background: var(--border); }
+
+.nav-actions { display: flex; align-items: center; gap: 10px; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 14px;
+  padding: 9px 18px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-decoration: none;
+  border: none;
+  transition: all 0.18s;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ink-60);
+}
+
+.btn-ghost:hover { background: var(--border); color: var(--ink); }
+
+.btn-primary {
+  background: var(--ink);
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+
+.btn-primary:hover { background: #1a1f2e; transform: translateY(-1px); box-shadow: var(--shadow); }
+
+.btn-accent {
+  background: var(--accent);
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+
+.btn-accent:hover { background: var(--accent-light); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,92,255,0.3); }
+
+.btn-lg {
+  font-size: 15px;
+  padding: 14px 28px;
+  border-radius: var(--radius);
+}
+
+.btn-xl {
+  font-size: 16px;
+  padding: 16px 32px;
+  border-radius: var(--radius);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--ink);
+  border: 1.5px solid var(--border-strong);
+}
+
+.btn-outline:hover { background: var(--ink); color: #fff; }
+
+/* ── LAYOUT ── */
+.container {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--page-pad);
+}
+
+.section {
+  padding: clamp(60px, 8vw, 120px) 0;
+}
+
+.section-sm {
+  padding: clamp(40px, 5vw, 70px) 0;
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-60);
+  margin-bottom: 20px;
+}
+
+.label-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: inline-block;
+}
+
+.label-accent { color: var(--accent); }
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+h1 { font-size: clamp(42px, 6vw, 80px); }
+h2 { font-size: clamp(32px, 4vw, 56px); }
+h3 { font-size: clamp(22px, 2.5vw, 32px); }
+h4 { font-size: 20px; }
+
+.italic { font-style: italic; }
+
+.text-lead {
+  font-size: clamp(17px, 2vw, 20px);
+  line-height: 1.65;
+  color: var(--ink-60);
+  font-weight: 350;
+}
+
+.text-sm { font-size: 13px; }
+.text-xs { font-size: 12px; }
+.text-accent { color: var(--accent); }
+.text-green { color: var(--green); }
+.text-amber { color: var(--amber); }
+.text-muted { color: var(--ink-60); }
+.font-mono { font-family: var(--font-mono); }
+.font-medium { font-weight: 500; }
+
+/* ── GRID ── */
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+
+@media (max-width: 900px) {
+  .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  nav .nav-links { display: none; }
+}
+
+/* ── CARDS ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  transition: all 0.2s;
+}
+
+.card:hover { border-color: var(--border-strong); box-shadow: var(--shadow); transform: translateY(-2px); }
+
+.card-dark {
+  background: var(--ink);
+  color: #fff;
+  border: none;
+}
+
+/* ── BADGE ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid;
+}
+
+.badge-green { background: var(--green-light); color: var(--green); border-color: rgba(0,135,90,0.2); }
+.badge-amber { background: var(--amber-light); color: var(--amber); border-color: rgba(196,82,0,0.2); }
+.badge-blue { background: var(--accent-dim); color: var(--accent); border-color: rgba(26,92,255,0.2); }
+.badge-neutral { background: var(--paper-dark); color: var(--ink-60); border-color: var(--border); }
+
+/* ── DIVIDER ── */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0;
+}
+
+/* ─────────────────────────────────────
+   HOME PAGE
+───────────────────────────────────── */
+
+/* HERO */
+.hero {
+  padding-top: calc(var(--nav-h) + 60px);
+  padding-bottom: 80px;
+  background: var(--paper);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -200px; right: -300px;
+  width: 700px; height: 700px;
+  background: radial-gradient(ellipse, rgba(26,92,255,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--page-pad);
+}
+
+.hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--accent-dim);
+  border: 1px solid rgba(26,92,255,0.2);
+  border-radius: 999px;
+  padding: 6px 14px 6px 8px;
+  margin-bottom: 36px;
+}
+
+.hero-kicker-dot {
+  background: var(--accent);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+
+.hero-kicker span {
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.hero-headline {
+  font-size: clamp(48px, 7vw, 88px);
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1.0;
+  margin-bottom: 28px;
+  max-width: 850px;
+}
+
+.hero-headline .accent-line {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.hero-sub {
+  font-size: clamp(17px, 2vw, 21px);
+  color: var(--ink-60);
+  font-weight: 350;
+  line-height: 1.65;
+  max-width: 560px;
+  margin-bottom: 44px;
+}
+
+.hero-ctas {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 60px;
+}
+
+.hero-trust-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 28px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--ink-60);
+  font-weight: 450;
+}
+
+.trust-item svg { color: var(--green); }
+
+.hero-dashboard {
+  margin-top: 80px;
+  background: var(--ink);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-lg), 0 0 0 1px rgba(255,255,255,0.06) inset;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-dashboard::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+}
+
+.dash-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.dash-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.dash-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #00d68f;
+}
+
+.dash-status::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #00d68f;
+  display: block;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.dash-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 600px) {
+  .dash-metrics { grid-template-columns: repeat(2, 1fr); }
+}
+
+.dash-metric {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.dash-metric-label {
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.dash-metric-value {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 500;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.dash-metric-delta {
+  font-size: 11px;
+  color: #00d68f;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.dash-metric-delta.neg { color: #ff6b6b; }
+
+.dash-chart {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+  padding: 20px;
+  height: 140px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.dash-bar {
+  flex: 1;
+  border-radius: 3px 3px 0 0;
+  background: rgba(26,92,255,0.3);
+  transition: height 0.3s;
+  position: relative;
+}
+
+.dash-bar.active {
+  background: var(--accent);
+}
+
+.dash-bar-label {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  color: rgba(255,255,255,0.3);
+  white-space: nowrap;
+}
+
+.dash-chart-overlay {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  text-align: right;
+}
+
+.dash-chart-value {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  color: #fff;
+}
+
+.dash-chart-caption {
+  font-size: 10px;
+  color: rgba(255,255,255,0.35);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* FEE COMPARISON */
+.fee-compare {
+  background: var(--ink);
+  color: #fff;
+}
+
+.fee-compare-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+@media (max-width: 800px) {
+  .fee-compare-inner { grid-template-columns: 1fr; }
+}
+
+.fee-col {
+  padding: clamp(40px, 6vw, 80px);
+}
+
+.fee-col-left {
+  border-right: 1px solid rgba(255,255,255,0.08);
+}
+
+@media (max-width: 800px) {
+  .fee-col-left { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); }
+}
+
+.fee-label-old {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,100,100,0.8);
+  margin-bottom: 24px;
+}
+
+.fee-label-new {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #00d68f;
+  margin-bottom: 24px;
+}
+
+.fee-big {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 5vw, 64px);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+.fee-rows {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fee-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+}
+
+.fee-row-label { font-size: 14px; color: rgba(255,255,255,0.6); }
+
+.fee-row-amount {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.fee-row-amount.bad { color: #ff6b6b; }
+.fee-row-amount.good { color: #00d68f; }
+
+/* CALCULATOR */
+.calc-section { background: var(--surface-alt); }
+
+.calc-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: clamp(28px, 4vw, 48px);
+  box-shadow: var(--shadow);
+}
+
+.calc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+@media (max-width: 700px) {
+  .calc-grid { grid-template-columns: 1fr; }
+}
+
+.calc-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-60);
+  margin-bottom: 8px;
+}
+
+.calc-input-wrap { margin-bottom: 24px; }
+
+.calc-input {
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  outline: none;
+  transition: border-color 0.15s;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.calc-input:focus { border-color: var(--accent); }
+
+input[type="range"] {
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent) 0%, var(--border-strong) 0%);
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  margin-top: 8px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 3px solid #fff;
+  box-shadow: 0 2px 6px rgba(26,92,255,0.4);
+  cursor: pointer;
+}
+
+.calc-results {
+  background: var(--ink);
+  border-radius: 14px;
+  padding: 32px;
+  color: #fff;
+}
+
+.calc-result-item {
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.calc-result-item:last-child { border-bottom: none; }
+
+.calc-result-label { font-size: 12px; color: rgba(255,255,255,0.4); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 6px; }
+
+.calc-result-value {
+  font-family: var(--font-mono);
+  font-size: 28px;
+  font-weight: 500;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.calc-result-value.highlight { color: #00d68f; }
+
+/* WHY ACH */
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 900px) { .why-grid { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 580px) { .why-grid { grid-template-columns: 1fr; } }
+
+.why-card {
+  padding: 28px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  transition: all 0.2s;
+}
+
+.why-card:hover { box-shadow: var(--shadow); border-color: var(--border-strong); transform: translateY(-2px); }
+
+.why-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--accent-dim);
+  display: grid;
+  place-items: center;
+  margin-bottom: 18px;
+  color: var(--accent);
+}
+
+.why-title {
+  font-size: 17px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  letter-spacing: -0.01em;
+}
+
+.why-body {
+  font-size: 14px;
+  color: var(--ink-60);
+  line-height: 1.65;
+}
+
+/* INFRA */
+.infra-section { background: var(--ink); color: #fff; }
+
+.infra-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+@media (max-width: 800px) { .infra-grid { grid-template-columns: 1fr; } }
+
+.infra-features {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 40px;
+}
+
+.infra-feature {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.infra-feature-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(26,92,255,0.15);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  color: var(--accent-light);
+}
+
+.infra-feature-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.infra-feature-body {
+  font-size: 13px;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.6;
+}
+
+.infra-visual {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.code-line {
+  display: flex;
+  gap: 12px;
+  padding: 4px 0;
+  color: rgba(255,255,255,0.35);
+}
+
+.code-line-num {
+  color: rgba(255,255,255,0.15);
+  user-select: none;
+  flex-shrink: 0;
+  width: 20px;
+  text-align: right;
+}
+
+.code-key { color: #79b8ff; }
+.code-str { color: #9ecbff; }
+.code-val { color: #85e89d; }
+.code-comment { color: rgba(255,255,255,0.2); font-style: italic; }
+.code-block {
+  background: rgba(26,92,255,0.08);
+  border-left: 2px solid var(--accent);
+  padding: 12px 16px;
+  margin: 12px 0;
+  border-radius: 0 8px 8px 0;
+}
+
+/* TRUST */
+.trust-section { background: var(--surface-alt); }
+
+.trust-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 56px;
+}
+
+@media (max-width: 900px) { .trust-grid { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 560px) { .trust-grid { grid-template-columns: 1fr; } }
+
+.trust-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+
+.trust-card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--green-light);
+  display: grid;
+  place-items: center;
+  margin-bottom: 16px;
+  color: var(--green);
+}
+
+.trust-card-title {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.trust-card-body {
+  font-size: 13px;
+  color: var(--ink-60);
+  line-height: 1.6;
+}
+
+/* USE CASES */
+.use-cases {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 52px;
+}
+
+@media (max-width: 900px) { .use-cases { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 560px) { .use-cases { grid-template-columns: 1fr; } }
+
+.use-case-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 24px 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.use-case-card:hover {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  transform: translateY(-2px);
+}
+
+.use-case-icon {
+  font-size: 24px;
+  margin-bottom: 14px;
+}
+
+.use-case-title {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+
+.use-case-body {
+  font-size: 13px;
+  color: var(--ink-60);
+  line-height: 1.6;
+}
+
+/* TESTIMONIALS */
+.testimonial-section { background: var(--paper); }
+
+.testimonial-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 52px;
+}
+
+@media (max-width: 900px) { .testimonial-grid { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 580px) { .testimonial-grid { grid-template-columns: 1fr; } }
+
+.testimonial-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+}
+
+.testimonial-quote {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--ink);
+  margin-bottom: 24px;
+  font-style: italic;
+}
+
+.testimonial-quote::before { content: '"'; color: var(--accent); font-size: 28px; font-family: var(--font-display); line-height: 0.5; margin-right: 4px; vertical-align: -8px; }
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.testimonial-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.testimonial-name {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.testimonial-role {
+  font-size: 12px;
+  color: var(--ink-60);
+}
+
+.savings-highlight {
+  background: var(--green-light);
+  border: 1px solid rgba(0,135,90,0.15);
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--green);
+  font-weight: 500;
+}
+
+/* FAQ */
+.faq-section { background: var(--surface-alt); }
+
+.faq-list {
+  max-width: 720px;
+  margin: 52px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.faq-item {
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.faq-item:first-child { border-top: 1px solid var(--border); }
+
+.faq-q {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  gap: 20px;
+  user-select: none;
+}
+
+.faq-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--border);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  font-size: 18px;
+  color: var(--ink-60);
+  transition: all 0.2s;
+}
+
+.faq-item.open .faq-icon {
+  background: var(--ink);
+  color: #fff;
+  transform: rotate(45deg);
+}
+
+.faq-a {
+  font-size: 14px;
+  color: var(--ink-60);
+  line-height: 1.75;
+  padding-bottom: 20px;
+  display: none;
+}
+
+.faq-item.open .faq-a { display: block; }
+
+/* FINAL CTA */
+.final-cta {
+  background: var(--ink);
+  color: #fff;
+  padding: clamp(60px, 8vw, 120px) 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.final-cta::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px; height: 400px;
+  background: radial-gradient(ellipse, rgba(26,92,255,0.2) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.final-cta h2 {
+  color: #fff;
+  margin-bottom: 20px;
+  max-width: 680px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.final-cta p {
+  color: rgba(255,255,255,0.5);
+  font-size: 18px;
+  margin-bottom: 44px;
+}
+
+.final-cta-btns {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+/* ─────────────────────────────────────
+   PRICING PAGE
+───────────────────────────────────── */
+.pricing-hero {
+  padding-top: calc(var(--nav-h) + 60px);
+  padding-bottom: 60px;
+  text-align: center;
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 56px;
+}
+
+@media (max-width: 900px) { .pricing-grid { grid-template-columns: 1fr; max-width: 480px; margin-left: auto; margin-right: auto; } }
+
+.pricing-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.pricing-card.featured {
+  background: var(--ink);
+  border-color: transparent;
+  color: #fff;
+  transform: scale(1.02);
+  box-shadow: var(--shadow-lg);
+}
+
+.pricing-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 14px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.pricing-plan-name {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  color: var(--ink-60);
+}
+
+.pricing-card.featured .pricing-plan-name { color: rgba(255,255,255,0.5); }
+
+.pricing-price {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.pricing-currency {
+  font-size: 22px;
+  font-weight: 500;
+  align-self: flex-start;
+  margin-top: 8px;
+  opacity: 0.6;
+}
+
+.pricing-amount {
+  font-family: var(--font-display);
+  font-size: 56px;
+  font-weight: 400;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.pricing-cap {
+  font-size: 13px;
+  color: var(--ink-60);
+  margin-bottom: 28px;
+}
+
+.pricing-card.featured .pricing-cap { color: rgba(255,255,255,0.4); }
+
+.pricing-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 32px;
+  min-height: 200px;
+}
+
+.pricing-feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--ink-60);
+}
+
+.pricing-card.featured .pricing-feature { color: rgba(255,255,255,0.6); }
+
+.pricing-check {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--green-light);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  color: var(--green);
+  margin-top: 1px;
+}
+
+.pricing-card.featured .pricing-check {
+  background: rgba(0,214,143,0.15);
+  color: #00d68f;
+}
+
+.pricing-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 28px 0;
+}
+
+.pricing-card.featured .pricing-divider { background: rgba(255,255,255,0.08); }
+
+.fee-table {
+  width: 100%;
+  margin-top: 56px;
+  border-collapse: collapse;
+}
+
+.fee-table th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-60);
+  background: var(--paper-dark);
+  border-bottom: 1px solid var(--border);
+}
+
+.fee-table td {
+  padding: 14px 16px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.fee-table tr:last-child td { border-bottom: none; }
+.fee-table tr:hover td { background: var(--surface-alt); }
+
+.fee-table .mono { font-family: var(--font-mono); font-size: 13px; }
+
+/* ─────────────────────────────────────
+   FEATURES PAGE
+───────────────────────────────────── */
+.features-hero {
+  padding-top: calc(var(--nav-h) + 60px);
+  padding-bottom: 60px;
+}
+
+.feature-section {
+  padding: 60px 0;
+  border-top: 1px solid var(--border);
+}
+
+.feature-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.feature-layout.reverse { direction: rtl; }
+.feature-layout.reverse > * { direction: ltr; }
+
+@media (max-width: 800px) {
+  .feature-layout, .feature-layout.reverse { grid-template-columns: 1fr; direction: ltr; }
+}
+
+.feature-visual {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow);
+}
+
+/* ─────────────────────────────────────
+   SECURITY PAGE
+───────────────────────────────────── */
+.security-hero {
+  padding-top: calc(var(--nav-h) + 60px);
+  padding-bottom: 60px;
+  text-align: center;
+}
+
+.compliance-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin: 52px 0;
+}
+
+@media (max-width: 900px) { .compliance-grid { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 500px) { .compliance-grid { grid-template-columns: 1fr; } }
+
+.compliance-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  text-align: center;
+}
+
+.compliance-logo {
+  font-size: 28px;
+  margin-bottom: 12px;
+}
+
+.compliance-name {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.compliance-desc {
+  font-size: 12px;
+  color: var(--ink-60);
+  line-height: 1.6;
+}
+
+/* ─────────────────────────────────────
+   HOW IT WORKS PAGE
+───────────────────────────────────── */
+.hiw-hero {
+  padding-top: calc(var(--nav-h) + 60px);
+  padding-bottom: 60px;
+  text-align: center;
+}
+
+.hiw-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-width: 800px;
+  margin: 56px auto 0;
+  position: relative;
+}
+
+.hiw-steps::before {
+  content: '';
+  position: absolute;
+  left: 28px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(180deg, var(--accent), var(--border));
+}
+
+.hiw-step {
+  display: flex;
+  gap: 28px;
+  padding: 0 0 48px;
+}
+
+.hiw-step-num {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 500;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  border: 3px solid var(--paper);
+  box-shadow: 0 0 0 1px var(--ink);
+}
+
+.hiw-step-content { padding-top: 12px; }
+
+.hiw-step-title {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  letter-spacing: -0.01em;
+}
+
+.hiw-step-body {
+  font-size: 15px;
+  color: var(--ink-60);
+  line-height: 1.7;
+}
+
+/* ─────────────────────────────────────
+   ABOUT PAGE
+───────────────────────────────────── */
+.about-hero {
+  padding-top: calc(var(--nav-h) + 60px);
+  padding-bottom: 60px;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-top: 52px;
+}
+
+@media (max-width: 900px) { .team-grid { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 500px) { .team-grid { grid-template-columns: 1fr; } }
+
+.team-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  text-align: center;
+}
+
+.team-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--ink);
+  margin: 0 auto 16px;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.team-name {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.team-role {
+  font-size: 12px;
+  color: var(--ink-60);
+  margin-bottom: 12px;
+}
+
+/* ─────────────────────────────────────
+   CONTACT PAGE
+───────────────────────────────────── */
+.contact-hero {
+  padding-top: calc(var(--nav-h) + 60px);
+  padding-bottom: 60px;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: start;
+}
+
+@media (max-width: 800px) { .contact-grid { grid-template-columns: 1fr; } }
+
+.form-field {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-60);
+  margin-bottom: 8px;
+}
+
+.form-input {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.form-input:focus { border-color: var(--accent); }
+
+textarea.form-input { resize: vertical; min-height: 120px; }
+
+select.form-input { cursor: pointer; }
+
+/* ─────────────────────────────────────
+   FOOTER
+───────────────────────────────────── */
+footer {
+  background: var(--ink);
+  color: rgba(255,255,255,0.5);
+  padding: 64px 0 32px;
+}
+
+.footer-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--page-pad);
+}
+
+.footer-top {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 56px;
+}
+
+@media (max-width: 900px) { .footer-top { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 500px) { .footer-top { grid-template-columns: 1fr; } }
+
+.footer-brand h4 {
+  color: #fff;
+  font-size: 16px;
+  margin-bottom: 10px;
+  font-family: var(--font-body);
+  font-weight: 600;
+}
+
+.footer-brand p {
+  font-size: 13px;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.35);
+  max-width: 280px;
+  margin-bottom: 20px;
+}
+
+.footer-col h5 {
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  font-family: var(--font-body);
+}
+
+.footer-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-links a {
+  font-size: 13px;
+  color: rgba(255,255,255,0.4);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.footer-links a:hover { color: rgba(255,255,255,0.8); }
+
+.footer-bottom {
+  padding-top: 24px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.footer-bottom p { font-size: 12px; }
+
+.footer-legal {
+  display: flex;
+  gap: 20px;
+}
+
+.footer-legal a {
+  font-size: 12px;
+  color: rgba(255,255,255,0.35);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* ── STAT ROW ── */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-top: 60px;
+}
+
+@media (max-width: 700px) { .stat-row { grid-template-columns: repeat(2,1fr); } }
+
+.stat-cell {
+  background: var(--surface);
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 40px;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--ink-60);
+}
+
+/* ── NOTICE BAR ── */
+.notice-bar {
+  background: var(--accent);
+  color: #fff;
+  text-align: center;
+  padding: 10px var(--page-pad);
+  font-size: 13px;
+  font-weight: 500;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1001;
+}
+
+.notice-bar + nav {
+  top: 36px;
+}
+
+/* ── PAGE NAV DOTS ── */
+.page-tabs {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+}
+
+/* ── MOBILE NAV ── */
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  color: var(--ink);
+}
+
+@media (max-width: 640px) {
+  .mobile-menu-btn { display: flex; }
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-up {
+  animation: fadeUp 0.6s ease forwards;
+}
+
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.2s; }
+.delay-3 { animation-delay: 0.3s; }
+
+/* ── MISC ── */
+.text-center { text-align: center; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+.max-560 { max-width: 560px; }
+.max-680 { max-width: 680px; }
+.max-800 { max-width: 800px; }
+.mb-4 { margin-bottom: 16px; }
+.mb-6 { margin-bottom: 24px; }
+.mb-8 { margin-bottom: 32px; }
+.mb-12 { margin-bottom: 48px; }
+.mt-4 { margin-top: 16px; }
+.mt-8 { margin-top: 32px; }
+.mt-12 { margin-top: 48px; }
+.mt-16 { margin-top: 64px; }
+.gap-3 { gap: 12px; }
+.flex { display: flex; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.flex-wrap { flex-wrap: wrap; }
+.w-full { width: 100%; }
+
+.highlight-box {
+  background: linear-gradient(135deg, var(--accent-dim), rgba(0,135,90,0.06));
+  border: 1px solid rgba(26,92,255,0.15);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+}
+
+.number-large {
+  font-family: var(--font-display);
+  font-size: 56px;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.table-responsive { overflow-x: auto; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-60);
+  background: var(--paper-dark);
+}
+
+tr:hover td { background: var(--surface-alt); }
+
+.progress-bar {
+  height: 6px;
+  background: var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.progress-fill.bad { background: #ff6b6b; }
+.progress-fill.good { background: var(--green); }
+</style>
+</head>
+<body>
+
+<!-- Notice Bar -->
+<div class="notice-bar">
+  💡 Never pay more than $5 per transaction — regardless of payment amount. &nbsp;<strong style="cursor:pointer;text-decoration:underline;" onclick="navigate('pricing')">See pricing →</strong>
+</div>
+
+<!-- Navigation -->
+<nav style="top:36px;">
+  <div class="nav-inner">
+    <div class="logo" onclick="navigate('home')">
+      <div class="logo-mark">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M3 14L9 4L15 14H3Z" fill="white" opacity="0.9"/>
+          <path d="M6 10H12" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="logo-name">ACHPay<span>.ai</span></span>
+    </div>
+
+    <ul class="nav-links">
+      <li><a onclick="navigate('features')">Features</a></li>
+      <li><a onclick="navigate('pricing')">Pricing</a></li>
+      <li><a onclick="navigate('security')">Security</a></li>
+      <li><a onclick="navigate('how-it-works')">How It Works</a></li>
+      <li><a onclick="navigate('use-cases')">Use Cases</a></li>
+      <li><a onclick="navigate('about')">About</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <button class="btn btn-ghost" onclick="navigate('contact')">Sign In</button>
+      <button class="btn btn-primary" onclick="navigate('contact')">Get Started</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════
+     HOME PAGE
+════════════════════════════════════ -->
+<div class="page active" id="page-home">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-kicker animate-up">
+        <span class="hero-kicker-dot">New</span>
+        <span>ACH infrastructure built for enterprise finance teams</span>
+      </div>
+
+      <h1 class="hero-headline animate-up delay-1">
+        Stop paying 2–3%<br>per transaction.<br>
+        <span class="accent-line">Pay $5. Maximum.</span>
+      </h1>
+
+      <p class="hero-sub animate-up delay-2">
+        ACHPay replaces expensive card rails with low-cost ACH payments. Predictable pricing, enterprise reliability, and instant margin improvement — from day one.
+      </p>
+
+      <div class="hero-ctas animate-up delay-3">
+        <button class="btn btn-accent btn-xl" onclick="navigate('contact')">
+          Schedule a Demo
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="btn btn-outline btn-xl" onclick="navigate('pricing')">
+          See Pricing
+        </button>
+      </div>
+
+      <div class="hero-trust-bar">
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="#00875a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          NACHA Compliant
+        </div>
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="#00875a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          SOC 2 Type II
+        </div>
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="#00875a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Bank-grade encryption
+        </div>
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="#00875a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          99.98% uptime SLA
+        </div>
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="#00875a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Same-day ACH available
+        </div>
+      </div>
+
+      <!-- Dashboard Preview -->
+      <div class="hero-dashboard">
+        <div class="dash-header">
+          <span class="dash-title">Payment Operations Dashboard</span>
+          <span class="dash-status">Live — All systems operational</span>
+        </div>
+
+        <div class="dash-metrics">
+          <div class="dash-metric">
+            <div class="dash-metric-label">Monthly Volume</div>
+            <div class="dash-metric-value">$4.2M</div>
+            <div class="dash-metric-delta">↑ 18% vs last month</div>
+          </div>
+          <div class="dash-metric">
+            <div class="dash-metric-label">Avg. Transaction Cost</div>
+            <div class="dash-metric-value">$1.84</div>
+            <div class="dash-metric-delta">↓ from $62 on card</div>
+          </div>
+          <div class="dash-metric">
+            <div class="dash-metric-label">Monthly Savings</div>
+            <div class="dash-metric-value">$108K</div>
+            <div class="dash-metric-delta">↑ vs card rails</div>
+          </div>
+          <div class="dash-metric">
+            <div class="dash-metric-label">Success Rate</div>
+            <div class="dash-metric-value">99.4%</div>
+            <div class="dash-metric-delta">↑ 0.3pts this quarter</div>
+          </div>
+        </div>
+
+        <div class="dash-chart">
+          <div class="dash-bar" style="height:45%"><span class="dash-bar-label">Jan</span></div>
+          <div class="dash-bar" style="height:52%"><span class="dash-bar-label">Feb</span></div>
+          <div class="dash-bar" style="height:48%"><span class="dash-bar-label">Mar</span></div>
+          <div class="dash-bar" style="height:61%"><span class="dash-bar-label">Apr</span></div>
+          <div class="dash-bar" style="height:55%"><span class="dash-bar-label">May</span></div>
+          <div class="dash-bar" style="height:70%"><span class="dash-bar-label">Jun</span></div>
+          <div class="dash-bar active" style="height:84%"><span class="dash-bar-label">Jul</span></div>
+          <div class="dash-bar" style="height:75%"><span class="dash-bar-label">Aug</span></div>
+          <div class="dash-bar" style="height:88%"><span class="dash-bar-label">Sep</span></div>
+          <div class="dash-bar" style="height:92%"><span class="dash-bar-label">Oct</span></div>
+          <div class="dash-bar" style="height:87%"><span class="dash-bar-label">Nov</span></div>
+          <div class="dash-bar" style="height:96%"><span class="dash-bar-label">Dec</span></div>
+          <div class="dash-chart-overlay">
+            <div class="dash-chart-value">$108K</div>
+            <div class="dash-chart-caption">Monthly savings vs card</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS BAR -->
+  <section class="section-sm" style="background:var(--surface); border-top:1px solid var(--border);">
+    <div class="container">
+      <div class="stat-row">
+        <div class="stat-cell">
+          <div class="stat-value">$5</div>
+          <div class="stat-label">Maximum per transaction</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value">$2.1B+</div>
+          <div class="stat-label">Payments processed</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value">97%</div>
+          <div class="stat-label">Average fee reduction</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value">2,400+</div>
+          <div class="stat-label">Enterprise clients</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEE COMPARISON -->
+  <section class="fee-compare">
+    <div class="fee-col fee-col-left">
+      <div class="label" style="color:rgba(255,100,100,0.7)">
+        <span class="label-dot" style="background:#ff6b6b"></span>
+        What you're paying now
+      </div>
+      <div class="fee-big">2.9% + 30¢</div>
+      <p style="color:rgba(255,255,255,0.45);font-size:15px;line-height:1.65;">On a $10,000 invoice, that's <strong style="color:#ff6b6b;">$290.30</strong> in processing fees. Per transaction. Hundreds of times a year.</p>
+
+      <div class="fee-rows">
+        <div class="fee-row">
+          <span class="fee-row-label">$10K transaction</span>
+          <span class="fee-row-amount bad">$290.30</span>
+        </div>
+        <div class="fee-row">
+          <span class="fee-row-label">$50K transaction</span>
+          <span class="fee-row-amount bad">$1,450.30</span>
+        </div>
+        <div class="fee-row">
+          <span class="fee-row-label">$100K transaction</span>
+          <span class="fee-row-amount bad">$2,900.30</span>
+        </div>
+        <div class="fee-row">
+          <span class="fee-row-label">100 txns × $10K avg</span>
+          <span class="fee-row-amount bad">$29,030/mo</span>
+        </div>
+      </div>
+
+      <div style="margin-top:24px;padding:16px;background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.15);border-radius:10px;">
+        <p style="font-size:13px;color:rgba(255,255,255,0.5);">This is not a cost of doing business. It is <strong style="color:#ff8888;">margin destruction</strong> — paid to card networks, not your bottom line.</p>
+      </div>
+    </div>
+
+    <div class="fee-col">
+      <div class="label" style="color:#00d68f">
+        <span class="label-dot" style="background:#00d68f"></span>
+        With ACHPay
+      </div>
+      <div class="fee-big" style="color:#00d68f;">$5 cap</div>
+      <p style="color:rgba(255,255,255,0.45);font-size:15px;line-height:1.65;">Never pay more than $5 — no matter the transaction size. $500 or $500,000, you're protected by our fee ceiling.</p>
+
+      <div class="fee-rows">
+        <div class="fee-row">
+          <span class="fee-row-label">$10K transaction</span>
+          <span class="fee-row-amount good">≤ $5.00</span>
+        </div>
+        <div class="fee-row">
+          <span class="fee-row-label">$50K transaction</span>
+          <span class="fee-row-amount good">≤ $5.00</span>
+        </div>
+        <div class="fee-row">
+          <span class="fee-row-label">$100K transaction</span>
+          <span class="fee-row-amount good">≤ $5.00</span>
+        </div>
+        <div class="fee-row">
+          <span class="fee-row-label">100 txns × $10K avg</span>
+          <span class="fee-row-amount good">≤ $500/mo</span>
+        </div>
+      </div>
+
+      <div style="margin-top:24px;padding:16px;background:rgba(0,214,143,0.06);border:1px solid rgba(0,214,143,0.15);border-radius:10px;">
+        <p style="font-size:13px;color:rgba(255,255,255,0.5);">That's <strong style="color:#00d68f;">$28,530 in monthly savings</strong> on the same volume. Returned directly to your operating margin.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SAVINGS CALCULATOR -->
+  <section class="section calc-section">
+    <div class="container">
+      <div class="label text-center mx-auto mb-4">
+        <span class="label-dot"></span>
+        Savings Calculator
+      </div>
+      <h2 class="text-center mb-4">How much will you save?</h2>
+      <p class="text-lead text-center max-680 mx-auto mb-8">Enter your current payment volume and see your estimated annual savings with ACHPay.</p>
+
+      <div class="calc-box max-800 mx-auto">
+        <div class="calc-grid">
+          <div>
+            <div class="calc-input-wrap">
+              <div class="calc-label">Monthly transaction volume ($)</div>
+              <input class="calc-input" type="number" id="calc-volume" value="500000" oninput="updateCalc()" />
+              <input type="range" id="calc-volume-slider" min="10000" max="10000000" step="10000" value="500000" oninput="syncSlider('volume')" />
+            </div>
+
+            <div class="calc-input-wrap">
+              <div class="calc-label">Average transaction size ($)</div>
+              <input class="calc-input" type="number" id="calc-avg" value="5000" oninput="updateCalc()" />
+              <input type="range" id="calc-avg-slider" min="100" max="100000" step="100" value="5000" oninput="syncSlider('avg')" />
+            </div>
+
+            <div class="calc-input-wrap">
+              <div class="calc-label">Current card processing rate (%)</div>
+              <input class="calc-input" type="number" id="calc-rate" value="2.9" step="0.1" oninput="updateCalc()" />
+            </div>
+          </div>
+
+          <div class="calc-results">
+            <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:24px;">Your Estimated Results</div>
+
+            <div class="calc-result-item">
+              <div class="calc-result-label">Monthly card fees (current)</div>
+              <div class="calc-result-value" id="calc-card-fee">$14,530</div>
+            </div>
+
+            <div class="calc-result-item">
+              <div class="calc-result-label">Monthly ACH fees with ACHPay</div>
+              <div class="calc-result-value" id="calc-ach-fee">$500</div>
+            </div>
+
+            <div class="calc-result-item">
+              <div class="calc-result-label">Monthly savings</div>
+              <div class="calc-result-value highlight" id="calc-monthly">$14,030</div>
+            </div>
+
+            <div class="calc-result-item">
+              <div class="calc-result-label">Annual savings</div>
+              <div class="calc-result-value highlight" style="font-size:36px;" id="calc-annual">$168,360</div>
+            </div>
+
+            <button class="btn btn-accent w-full" style="margin-top:24px;justify-content:center;" onclick="navigate('contact')">Get Your Custom Quote →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY FINANCE TEAMS SWITCH -->
+  <section class="section" style="background:var(--surface);">
+    <div class="container">
+      <div class="label mb-4">
+        <span class="label-dot"></span>
+        Why finance teams switch
+      </div>
+      <h2 class="mb-4 max-560">The operational and financial case for ACH</h2>
+      <p class="text-lead max-680 mb-12">Every finance leader who has run the analysis reaches the same conclusion: card fees are a voluntary margin tax. ACHPay removes it.</p>
+
+      <div class="why-grid">
+        <div class="why-card">
+          <div class="why-icon">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M2 7h16M7 7v13" stroke="currentColor" stroke-width="1.5"/></svg>
+          </div>
+          <div class="why-title">Predictable, flat-cost pricing</div>
+          <div class="why-body">Budgeting is simple when your payment costs don't scale with revenue. $5 maximum means your payment infrastructure has a known ceiling — always.</div>
+        </div>
+
+        <div class="why-card">
+          <div class="why-icon">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2l2.4 5.5L18 8.5l-4 3.8 1 5.7L10 15.5l-5 2.5 1-5.7L2 8.5l5.6-1z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="why-title">Automated reconciliation</div>
+          <div class="why-body">Every transaction matched, every settlement confirmed. ACHPay's reconciliation engine eliminates the manual overhead that consumes accounting team hours.</div>
+        </div>
+
+        <div class="why-card">
+          <div class="why-icon">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M10 6v4l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div class="why-title">Same-day and next-day settlement</div>
+          <div class="why-body">Improve cash flow visibility with faster settlement windows. Stop waiting 3–5 business days for funds that should already be yours.</div>
+        </div>
+
+        <div class="why-card">
+          <div class="why-icon">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M10 4l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="why-title">Treasury visibility in real time</div>
+          <div class="why-body">Live payment status, settlement forecasting, and cash position visibility — all in one operational dashboard built for treasury professionals.</div>
+        </div>
+
+        <div class="why-card">
+          <div class="why-icon">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div class="why-title">Margin expansion, immediately</div>
+          <div class="why-body">The average ACHPay customer improves gross margin by 1.8–4.2 percentage points in the first quarter. This is structural, not temporary.</div>
+        </div>
+
+        <div class="why-card">
+          <div class="why-icon">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="why-title">API-first, zero vendor lock-in</div>
+          <div class="why-body">Deploy in hours via REST API. Connect to your ERP, accounting system, or existing payment stack — or use ACHPay as a complete standalone solution.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INFRASTRUCTURE -->
+  <section class="section infra-section">
+    <div class="container">
+      <div class="infra-grid">
+        <div>
+          <div class="label" style="color:rgba(255,255,255,0.4)">
+            <span class="label-dot"></span>
+            Infrastructure
+          </div>
+          <h2 style="color:#fff;margin-bottom:16px;">Built for payment<br>operations at scale</h2>
+          <p style="color:rgba(255,255,255,0.45);font-size:16px;line-height:1.7;">ACHPay is not a payment gateway layered on someone else's infrastructure. We are the infrastructure — built from the ground up for high-volume, enterprise-grade ACH operations.</p>
+
+          <div class="infra-features">
+            <div class="infra-feature">
+              <div class="infra-feature-icon">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M5 7h6M5 10h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              </div>
+              <div>
+                <div class="infra-feature-title">REST API with full webhook support</div>
+                <div class="infra-feature-body">Idempotent endpoints, comprehensive event notifications, and detailed audit logs for every payment state change.</div>
+              </div>
+            </div>
+            <div class="infra-feature">
+              <div class="infra-feature-icon">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8c0-3.3 2.7-6 6-6s6 2.7 6 6-2.7 6-6 6" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </div>
+              <div>
+                <div class="infra-feature-title">Smart ACH routing engine</div>
+                <div class="infra-feature-body">Intelligent transaction routing optimizes for speed, cost, and success rate — automatically.</div>
+              </div>
+            </div>
+            <div class="infra-feature">
+              <div class="infra-feature-icon">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M5 8h6M8 5v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </div>
+              <div>
+                <div class="infra-feature-title">Automated reconciliation engine</div>
+                <div class="infra-feature-body">Daily, automated settlement matching with exception management and audit trail built in.</div>
+              </div>
+            </div>
+            <div class="infra-feature">
+              <div class="infra-feature-icon">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2L13 5v6l-5 3-5-3V5l5-3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+              </div>
+              <div>
+                <div class="infra-feature-title">Multi-bank redundancy</div>
+                <div class="infra-feature-body">Relationships with multiple ODFI partners ensure high availability even during network-level events.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="infra-visual">
+          <div style="color:rgba(255,255,255,0.3);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:16px;">ACHPay API — Initiate Payment</div>
+          <div class="code-line"><span class="code-line-num">1</span><span style="color:#79b8ff;">POST</span> <span class="code-str">/v1/payments</span></div>
+          <div class="code-line"><span class="code-line-num">2</span></div>
+          <div style="margin:4px 0 4px 28px;">
+            <div class="code-line"><span class="code-key">"amount"</span>: <span class="code-val">50000</span>, <span class="code-comment">// $500.00</span></div>
+            <div class="code-line"><span class="code-key">"currency"</span>: <span class="code-str">"usd"</span>,</div>
+            <div class="code-line"><span class="code-key">"payment_method"</span>: <span class="code-str">"ach_debit"</span>,</div>
+            <div class="code-line"><span class="code-key">"bank_account"</span>: {</div>
+            <div style="margin-left:16px;">
+              <div class="code-line"><span class="code-key">"routing"</span>: <span class="code-str">"021000021"</span>,</div>
+              <div class="code-line"><span class="code-key">"account"</span>: <span class="code-str">"••••••7823"</span></div>
+            </div>
+            <div class="code-line">},</div>
+            <div class="code-line"><span class="code-key">"settlement"</span>: <span class="code-str">"same_day"</span>,</div>
+            <div class="code-line"><span class="code-key">"idempotency_key"</span>: <span class="code-str">"inv_2024_0847"</span></div>
+          </div>
+          <div style="margin-top:16px;padding:12px;background:rgba(0,214,143,0.06);border:1px solid rgba(0,214,143,0.12);border-radius:8px;">
+            <div style="font-size:11px;color:rgba(255,255,255,0.25);margin-bottom:8px;">Response — 200 OK</div>
+            <div class="code-line"><span class="code-key">"id"</span>: <span class="code-str">"pay_3K9mFx..."</span></div>
+            <div class="code-line"><span class="code-key">"status"</span>: <span class="code-val">"processing"</span></div>
+            <div class="code-line"><span class="code-key">"fee"</span>: <span style="color:#00d68f;">4.99</span>, <span class="code-comment">// max $5</span></div>
+            <div class="code-line"><span class="code-key">"estimated_settlement"</span>: <span class="code-str">"2024-10-17"</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUST -->
+  <section class="section trust-section">
+    <div class="container">
+      <div class="label text-center mx-auto mb-4">
+        <span class="label-dot" style="background:var(--green)"></span>
+        Security & Compliance
+      </div>
+      <h2 class="text-center mb-4">Enterprise trust by design</h2>
+      <p class="text-lead text-center max-680 mx-auto">Every financial institution that processes ACH is accountable to exacting standards. We built ACHPay to exceed them.</p>
+
+      <div class="trust-grid">
+        <div class="trust-card">
+          <div class="trust-card-icon">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2l7 3v5c0 4-3 7-7 8-4-1-7-4-7-8V5l7-3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="trust-card-title">NACHA Compliant</div>
+          <div class="trust-card-body">Full compliance with NACHA Operating Rules. Every ACH transaction originated through our network meets the current rule set, automatically.</div>
+        </div>
+        <div class="trust-card">
+          <div class="trust-card-icon">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="8" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M7 8V5a3 3 0 016 0v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div class="trust-card-title">SOC 2 Type II Certified</div>
+          <div class="trust-card-body">Independently audited security controls covering availability, confidentiality, and processing integrity. Reports available on request.</div>
+        </div>
+        <div class="trust-card">
+          <div class="trust-card-icon">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="trust-card-title">AES-256 Encryption</div>
+          <div class="trust-card-body">Bank-grade encryption at rest and in transit. Routing and account numbers are tokenized — never stored in plaintext.</div>
+        </div>
+        <div class="trust-card">
+          <div class="trust-card-icon">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2l2.4 5.5L18 8.5l-4 3.8 1 5.7L10 15.5l-5 2.5 1-5.7L2 8.5l5.6-1z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="trust-card-title">99.98% Uptime SLA</div>
+          <div class="trust-card-body">Contractually guaranteed uptime backed by multi-region redundancy and a status page updated in real time.</div>
+        </div>
+        <div class="trust-card">
+          <div class="trust-card-icon">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><rect x="12" y="12" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/></svg>
+          </div>
+          <div class="trust-card-title">Complete Audit Logs</div>
+          <div class="trust-card-body">Every state change, every API call, every authorization event — immutably logged and exportable for compliance and forensic review.</div>
+        </div>
+        <div class="trust-card">
+          <div class="trust-card-icon">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/><path d="M3 18c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div class="trust-card-title">Multi-factor Auth & RBAC</div>
+          <div class="trust-card-body">Granular role-based access control, SSO support (SAML, OIDC), and enforced MFA for all user accounts.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- USE CASES -->
+  <section class="section" style="background:var(--paper);">
+    <div class="container">
+      <div class="label mb-4">
+        <span class="label-dot"></span>
+        Who uses ACHPay
+      </div>
+      <h2 class="mb-4 max-560">Payment infrastructure for every vertical</h2>
+      <p class="text-lead max-680 mb-0">From enterprise SaaS to marketplace platforms, ACHPay handles the payment complexity so your team doesn't have to.</p>
+
+      <div class="use-cases">
+        <div class="use-case-card" onclick="navigate('use-cases')">
+          <div class="use-case-icon">🏢</div>
+          <div class="use-case-title">B2B SaaS</div>
+          <div class="use-case-body">Offer ACH as a payment option at checkout. Reduce churn from failed cards and eliminate processing fees on high-value subscription revenue.</div>
+        </div>
+        <div class="use-case-card" onclick="navigate('use-cases')">
+          <div class="use-case-icon">🛒</div>
+          <div class="use-case-title">Marketplaces</div>
+          <div class="use-case-body">Streamline vendor payouts and buyer collections. ACHPay handles disbursements to thousands of sellers simultaneously — sub-$5 per transfer.</div>
+        </div>
+        <div class="use-case-card" onclick="navigate('use-cases')">
+          <div class="use-case-icon">🏗️</div>
+          <div class="use-case-title">B2B Commerce</div>
+          <div class="use-case-body">Replace net-30 check collections with ACH. Improve receivables velocity and eliminate the float cost embedded in traditional B2B payment terms.</div>
+        </div>
+        <div class="use-case-card" onclick="navigate('use-cases')">
+          <div class="use-case-icon">🏘️</div>
+          <div class="use-case-title">Property Management</div>
+          <div class="use-case-body">Collect rent, HOA fees, and security deposits via ACH. Automate collections across hundreds of units with a single integration.</div>
+        </div>
+        <div class="use-case-card" onclick="navigate('use-cases')">
+          <div class="use-case-icon">💼</div>
+          <div class="use-case-title">Payroll & HR</div>
+          <div class="use-case-body">Reliable, on-time direct deposit for employees and contractors. ACHPay's payroll rails offer same-day settlement with full compliance.</div>
+        </div>
+        <div class="use-case-card" onclick="navigate('use-cases')">
+          <div class="use-case-icon">🏦</div>
+          <div class="use-case-title">Treasury Operations</div>
+          <div class="use-case-body">Move money between entities, fund accounts, and manage inter-company settlements — all through a single, auditable payment layer.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="section testimonial-section">
+    <div class="container">
+      <div class="label text-center mx-auto mb-4">
+        <span class="label-dot"></span>
+        What finance leaders say
+      </div>
+      <h2 class="text-center mb-4">Real results from real teams</h2>
+      <p class="text-lead text-center max-680 mx-auto">Deployed at enterprises processing hundreds of millions in annual payment volume.</p>
+
+      <div class="testimonial-grid">
+        <div class="testimonial-card">
+          <p class="testimonial-quote">We processed $4.2M last month through ACHPay and paid under $800 in fees. Our previous card processor billed us $94,000 for similar volume. The difference lands directly in gross margin.</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">MR</div>
+            <div>
+              <div class="testimonial-name">Michael Reyes</div>
+              <div class="testimonial-role">CFO, Apex Procurement Solutions</div>
+            </div>
+          </div>
+          <div class="savings-highlight">💰 Saved $93,200 in one month</div>
+        </div>
+
+        <div class="testimonial-card">
+          <p class="testimonial-quote">Our finance team was spending 18 hours a week on reconciliation. ACHPay's reconciliation engine automated 94% of it. We redeployed that capacity into FP&A work that actually moves the business.</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">JL</div>
+            <div>
+              <div class="testimonial-name">Jennifer Lin</div>
+              <div class="testimonial-role">Controller, Meridian Distribution</div>
+            </div>
+          </div>
+          <div class="savings-highlight">⚡ 94% reconciliation automation</div>
+        </div>
+
+        <div class="testimonial-card">
+          <p class="testimonial-quote">I was skeptical about moving high-value B2B payments off card. Three months in, our treasury team has better cash visibility, faster settlement, and we've recovered almost 3 full margin points. The security review was also much simpler than expected.</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">DK</div>
+            <div>
+              <div class="testimonial-name">David Kosowski</div>
+              <div class="testimonial-role">VP Finance, NorthBridge Industrial</div>
+            </div>
+          </div>
+          <div class="savings-highlight">📈 +2.9 gross margin points</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section faq-section">
+    <div class="container">
+      <div class="label text-center mx-auto mb-4">
+        <span class="label-dot"></span>
+        Frequently Asked Questions
+      </div>
+      <h2 class="text-center mb-4">Questions from finance teams</h2>
+
+      <div class="faq-list">
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">Is ACH safe for large transactions? <span class="faq-icon">+</span></div>
+          <div class="faq-a">Yes. ACH is the payment rail used by the Federal Reserve, the US Treasury, and virtually every bank in the United States. In 2023, the ACH Network processed over $80 trillion in payments. ACH is appropriate for any transaction size, and ACHPay adds additional layers of verification, fraud screening, and audit controls on top of the base network.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">How does the $5 maximum fee work? <span class="faq-icon">+</span></div>
+          <div class="faq-a">ACHPay charges a percentage-based fee with a hard cap of $5.00 per transaction. On smaller transactions, you may pay less than $5 — but you will never pay more, regardless of transaction size. A $10,000 invoice and a $10,000,000 invoice both incur a maximum fee of $5.00. This pricing is contractual and appears explicitly in your service agreement.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">How long does ACH settlement take? <span class="faq-icon">+</span></div>
+          <div class="faq-a">Standard ACH settles in 1–2 business days. Same-Day ACH is available on our Growth and Enterprise plans, settling within hours on the same business day for transactions submitted before the NACHA cutoff. ACHPay also provides provisional credit visibility so your treasury team can plan cash positions before funds are fully settled.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">Can my customers be required to pay by ACH? <span class="faq-icon">+</span></div>
+          <div class="faq-a">Yes, particularly in B2B contexts. Many enterprise companies require ACH or wire for invoices over a defined threshold. ACHPay supports mandate collection, ACH authorization workflows, and both pull (debit) and push (credit) payment flows depending on your business model and customer agreement structure.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">What happens when a payment fails or is returned? <span class="faq-icon">+</span></div>
+          <div class="faq-a">ACHPay provides real-time webhook notifications for all payment events including failures, NSF returns, and unauthorized returns. Our dashboard surfaces return codes with plain-language explanations, and our retry engine can automatically resubmit eligible transactions under configurable rules. Return handling is a first-class feature, not an afterthought.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">How quickly can we go live? <span class="faq-icon">+</span></div>
+          <div class="faq-a">Most teams are processing test transactions within 48 hours of onboarding. Production go-live typically takes 5–10 business days, including bank account verification, underwriting, and compliance review. Enterprise customers with complex integration requirements can work with our Solutions Engineering team for a guided implementation.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <div class="final-cta">
+    <div class="container" style="position:relative;z-index:1;">
+      <div class="label text-center mx-auto mb-6" style="color:rgba(255,255,255,0.35);justify-content:center;">
+        <span class="label-dot" style="background:var(--accent)"></span>
+        Get started today
+      </div>
+      <h2 class="text-center" style="color:#fff;max-width:680px;margin:0 auto 20px;">The last payment processor you will ever need to evaluate</h2>
+      <p class="text-center" style="color:rgba(255,255,255,0.45);font-size:18px;max-width:560px;margin:0 auto 44px;">Stop losing margin to card fees. Schedule a 30-minute demo with our enterprise solutions team and we will model your exact savings.</p>
+      <div class="final-cta-btns">
+        <button class="btn btn-accent btn-xl" onclick="navigate('contact')">Schedule a Demo</button>
+        <button class="btn btn-outline btn-xl" style="color:#fff;border-color:rgba(255,255,255,0.25);" onclick="navigate('pricing')">View Pricing</button>
+      </div>
+      <p style="margin-top:24px;font-size:13px;color:rgba(255,255,255,0.25);">No commitment required. 99.98% uptime SLA. SOC 2 certified.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ════════════════════════════════════
+     PRICING PAGE
+════════════════════════════════════ -->
+<div class="page" id="page-pricing">
+  <section class="pricing-hero">
+    <div class="container">
+      <div class="label text-center mx-auto mb-4" style="justify-content:center;">
+        <span class="label-dot"></span>
+        Pricing
+      </div>
+      <h1 style="font-size:clamp(40px,6vw,72px);letter-spacing:-0.03em;margin-bottom:20px;">Simple. Capped. Predictable.</h1>
+      <p class="text-lead max-560 mx-auto text-center">Every plan includes the $5 maximum per transaction guarantee. No hidden fees. No percentage-based surprises at scale.</p>
+
+      <div class="pricing-grid mt-16">
+        <!-- Starter -->
+        <div class="pricing-card">
+          <div class="pricing-plan-name">Starter</div>
+          <div class="pricing-price">
+            <span class="pricing-currency">$</span>
+            <span class="pricing-amount">0.75</span>
+          </div>
+          <p class="pricing-cap">per transaction · $5 cap always applies</p>
+          <ul class="pricing-features">
+            <li class="pricing-feature"><span class="pricing-check">✓</span>Up to 500 transactions/month</li>
+            <li class="pricing-feature"><span class="pricing-check">✓</span>Standard ACH (1–2 business days)</li>
+            <li class="pricing-feature"><span class="pricing-check">✓</span>REST API access</li>
+            <li class="pricing-feature"><span class="pricing-check">✓</span>Dashboard & reporting</li>
+            <li class="pricing-feature"><span class="pricing-check">✓</span>Email support</li>
+            <li class="pricing-feature"><span class="pricing-check">✓</span>Bank account verification</li>
+          </ul>
+          <div class="pricing-divider"></div>
+          <button class="btn btn-outline btn-lg w-full" style="justify-content:center;" onclick="navigate('contact')">Start Free Trial</button>
+        </div>
+
+        <!-- Growth -->
+        <div class="pricing-card featured">
+          <div class="pricing-badge">Most Popular</div>
+          <div class="pricing-plan-name">Growth</div>
+          <div class="pricing-price">
+            <span class="pricing-currency" style="color:rgba(255,255,255,0.4)">$</span>
+            <span class="pricing-amount" style="color:#fff;">0.50</span>
+          </div>
+          <p class="pricing-cap">per transaction · $5 cap always applies</p>
+          <ul class="pricing-features">
+            <li class="pricing-feature"><span class="pricing-check">✓</span>Unlimited transactions</li>
+            <li class="pricing-feature"><span class="pricing-check">✓</span><strong style="color:#fff;">Same-Day ACH included</strong></li>
+            <li class="pricing-feature"><span class="pricing-check">✓</span>Advanced API & webhooks</li>
+            <li class="pricing-feature"><span class="pricing-check">✓</span>Automated reconciliation</li>
+            <li class="pricing-feature"><span class="pricing-check">✓</span>Priority support + SLA</li>
+            <li class="pricing-feature"><span class="pricing-check">✓</span>Treasury dashboard</li>
+            <li class="pricing-feature"><span class="pricing-check">✓</span>Custom retry logic</li>
+            <li class="pricing-feature"><span class="pricing-check">✓</span>ERP connectors (QuickBooks, NetSuite)</li>
+          </ul>
+          <div class="pricing-divider"></div>
+          <button class="btn btn-accent btn-lg w-full" style="justify-content:center;" onclick="navigate('contact')">Schedule Demo</button>
+        </div>
+
+        <!-- Enterprise -->
+        <div class="pricing-card">
+          <div class="pricing-plan-name">Enterprise</div>
+          <div class="pricing-price">
+            <span class="pricing-amount" style="font-size:40px;letter-spacing:-0.03em;">Custom</span>
+          </div>
+          <p class="pricing-cap">Volume pricing · $5 cap always applies</p>
+          <ul class="pricing-features">
+            <li class="pricing-feature"><span class="pricing-check">✓</span>Everything in Growth</li>
+            <li class="pricing-feature"><span class="pricing-check">✓</span>Negotiated per-transaction rate</li>
+            <li class="pricing-feature"><span class="pricing-check">✓</span>Dedicated account team</li>
+            <li class="pricing-feature"><span class="pricing-check">✓</span>Custom SLA (up to 99.99%)</li>
+            <li class="pricing-feature"><span class="pricing-check">✓</span>White-label option</li>
+            <li class="pricing-feature"><span class="pricing-check">✓</span>On-site implementation</li>
+            <li class="pricing-feature"><span class="pricing-check">✓</span>Custom compliance reporting</li>
+          </ul>
+          <div class="pricing-divider"></div>
+          <button class="btn btn-primary btn-lg w-full" style="justify-content:center;" onclick="navigate('contact')">Talk to Sales</button>
+        </div>
+      </div>
+
+      <!-- Comparison table -->
+      <div style="margin-top:80px;">
+        <h3 style="font-size:24px;margin-bottom:8px;text-align:center;">Fee comparison at common transaction sizes</h3>
+        <p class="text-lead text-center text-muted mb-8">The $5 cap means your effective rate gets lower as transaction size increases.</p>
+
+        <div class="table-responsive">
+          <table class="fee-table">
+            <thead>
+              <tr>
+                <th>Transaction Amount</th>
+                <th>Card (2.9% + 30¢)</th>
+                <th>ACHPay (0.5% · $5 cap)</th>
+                <th>Your Savings</th>
+                <th>Effective Rate</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="mono">$500</td>
+                <td class="mono" style="color:var(--amber)">$14.80</td>
+                <td class="mono" style="color:var(--green)">$2.50</td>
+                <td class="mono font-medium">$12.30</td>
+                <td class="mono">0.50%</td>
+              </tr>
+              <tr>
+                <td class="mono">$1,000</td>
+                <td class="mono" style="color:var(--amber)">$29.30</td>
+                <td class="mono" style="color:var(--green)">$5.00</td>
+                <td class="mono font-medium">$24.30</td>
+                <td class="mono">0.50%</td>
+              </tr>
+              <tr>
+                <td class="mono">$5,000</td>
+                <td class="mono" style="color:var(--amber)">$145.30</td>
+                <td class="mono" style="color:var(--green)">$5.00</td>
+                <td class="mono font-medium">$140.30</td>
+                <td class="mono">0.10%</td>
+              </tr>
+              <tr>
+                <td class="mono">$25,000</td>
+                <td class="mono" style="color:var(--amber)">$725.30</td>
+                <td class="mono" style="color:var(--green)">$5.00</td>
+                <td class="mono font-medium">$720.30</td>
+                <td class="mono">0.02%</td>
+              </tr>
+              <tr>
+                <td class="mono">$100,000</td>
+                <td class="mono" style="color:var(--amber)">$2,900.30</td>
+                <td class="mono" style="color:var(--green)">$5.00</td>
+                <td class="mono font-medium">$2,895.30</td>
+                <td class="mono">0.005%</td>
+              </tr>
+              <tr>
+                <td class="mono">$1,000,000</td>
+                <td class="mono" style="color:var(--amber)">$29,000.30</td>
+                <td class="mono" style="color:var(--green)">$5.00</td>
+                <td class="mono font-medium" style="color:var(--green)">$28,995.30</td>
+                <td class="mono">0.0005%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="final-cta">
+    <div class="container" style="position:relative;z-index:1;">
+      <h2 style="color:#fff;max-width:580px;margin:0 auto 20px;">Every dollar above $5 stays in your business</h2>
+      <p style="color:rgba(255,255,255,0.45);font-size:18px;max-width:480px;margin:0 auto 44px;">Talk to our enterprise team and get a savings projection for your exact volume and transaction profile.</p>
+      <button class="btn btn-accent btn-xl" onclick="navigate('contact')">Get Custom Quote</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     FEATURES PAGE
+════════════════════════════════════ -->
+<div class="page" id="page-features">
+  <section class="features-hero">
+    <div class="container">
+      <div class="label mb-4">
+        <span class="label-dot"></span>
+        Platform Features
+      </div>
+      <h1 style="font-size:clamp(40px,5vw,68px);letter-spacing:-0.03em;max-width:680px;margin-bottom:20px;">Everything your payment operations need</h1>
+      <p class="text-lead max-680">ACHPay is purpose-built for finance teams who need reliability, automation, and total payment visibility — without the complexity of building it themselves.</p>
+    </div>
+  </section>
+
+  <section style="background:var(--surface);padding:60px 0;border-top:1px solid var(--border);">
+    <div class="container">
+      <!-- Payments -->
+      <div class="feature-section" style="border:none;padding-top:0;">
+        <div class="feature-layout">
+          <div>
+            <div class="label mb-4"><span class="label-dot"></span>Core Payments</div>
+            <h2 style="font-size:clamp(28px,3vw,42px);margin-bottom:16px;">ACH payments, built for volume</h2>
+            <p class="text-lead mb-6">Initiate ACH debits and credits via API or dashboard. Handle both consumer and business accounts, with support for PPD, CCD, WEB, and TEL entry classes.</p>
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:12px;">
+              <li class="trust-item"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="#00875a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Same-Day and Next-Day ACH</li>
+              <li class="trust-item"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="#00875a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Push and pull payment flows</li>
+              <li class="trust-item"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="#00875a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Batch and single transaction support</li>
+              <li class="trust-item"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="#00875a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Idempotent API endpoints</li>
+              <li class="trust-item"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="#00875a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Configurable retry logic</li>
+            </ul>
+          </div>
+          <div class="feature-visual">
+            <div style="font-size:12px;color:var(--ink-60);margin-bottom:16px;font-family:var(--font-mono);letter-spacing:0.04em;">PAYMENT QUEUE — 14 pending</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--paper);border-radius:8px;border:1px solid var(--border);">
+                <div>
+                  <div style="font-size:13px;font-weight:500;">Acme Corp</div>
+                  <div style="font-size:11px;color:var(--ink-60);">CCD · Same-Day</div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-family:var(--font-mono);font-size:14px;">$47,500.00</div>
+                  <span class="badge badge-green" style="font-size:10px;">Processing</span>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--paper);border-radius:8px;border:1px solid var(--border);">
+                <div>
+                  <div style="font-size:13px;font-weight:500;">Meridian LLC</div>
+                  <div style="font-size:11px;color:var(--ink-60);">CCD · Next-Day</div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-family:var(--font-mono);font-size:14px;">$12,800.00</div>
+                  <span class="badge badge-blue" style="font-size:10px;">Pending</span>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--paper);border-radius:8px;border:1px solid var(--border);">
+                <div>
+                  <div style="font-size:13px;font-weight:500;">NorthBridge Industries</div>
+                  <div style="font-size:11px;color:var(--ink-60);">CCD · Standard</div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-family:var(--font-mono);font-size:14px;">$88,200.00</div>
+                  <span class="badge badge-green" style="font-size:10px;">Settled</span>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--paper);border-radius:8px;border:1px solid var(--border);">
+                <div>
+                  <div style="font-size:13px;font-weight:500;">Apex Procurement</div>
+                  <div style="font-size:11px;color:var(--ink-60);">CCD · Next-Day</div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-family:var(--font-mono);font-size:14px;">$215,000.00</div>
+                  <span class="badge badge-blue" style="font-size:10px;">Pending</span>
+                </div>
+              </div>
+            </div>
+            <div style="margin-top:16px;padding:12px;background:var(--accent-dim);border-radius:8px;border:1px solid rgba(26,92,255,0.15);display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:12px;color:var(--accent);">Total fees on this batch:</span>
+              <span style="font-family:var(--font-mono);font-size:16px;color:var(--accent);font-weight:600;">$20.00 (4 × $5 max)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reconciliation -->
+      <div class="feature-section">
+        <div class="feature-layout reverse">
+          <div>
+            <div class="label mb-4"><span class="label-dot"></span>Reconciliation</div>
+            <h2 style="font-size:clamp(28px,3vw,42px);margin-bottom:16px;">Automated matching. Zero manual work.</h2>
+            <p class="text-lead mb-6">ACHPay matches every payment to its corresponding invoice or reference, flags exceptions, and generates daily settlement reports. Your accounting team gets their time back.</p>
+            <div class="highlight-box" style="margin-top:24px;">
+              <div style="font-size:28px;font-weight:400;font-family:var(--font-display);letter-spacing:-0.02em;color:var(--accent);">94%</div>
+              <div style="font-size:14px;color:var(--ink-60);margin-top:4px;">of transactions auto-reconciled without human intervention — average across all ACHPay customers.</div>
+            </div>
+          </div>
+          <div class="feature-visual">
+            <div style="font-size:12px;color:var(--ink-60);margin-bottom:16px;font-family:var(--font-mono);">RECONCILIATION ENGINE — Today</div>
+            <div style="margin-bottom:12px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                <span style="font-size:13px;">Auto-matched</span>
+                <span style="font-size:13px;font-weight:500;color:var(--green);">847 / 901</span>
+              </div>
+              <div class="progress-bar"><div class="progress-fill good" style="width:94%"></div></div>
+            </div>
+            <div style="margin-bottom:12px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                <span style="font-size:13px;">Exceptions flagged</span>
+                <span style="font-size:13px;font-weight:500;color:var(--amber);">54 / 901</span>
+              </div>
+              <div class="progress-bar"><div class="progress-fill bad" style="width:6%;background:var(--amber)"></div></div>
+            </div>
+            <div style="margin-top:20px;display:flex;flex-direction:column;gap:8px;">
+              <div style="padding:10px;background:var(--green-light);border:1px solid rgba(0,135,90,0.15);border-radius:8px;font-size:12px;color:var(--green);">✓ inv_0847 · $12,500.00 · Matched to ACH-7238</div>
+              <div style="padding:10px;background:var(--green-light);border:1px solid rgba(0,135,90,0.15);border-radius:8px;font-size:12px;color:var(--green);">✓ inv_0848 · $88,200.00 · Matched to ACH-7241</div>
+              <div style="padding:10px;background:var(--amber-light);border:1px solid rgba(196,82,0,0.15);border-radius:8px;font-size:12px;color:var(--amber);">⚠ inv_0849 · $3,200.00 · Partial return — R01</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Treasury Dashboard -->
+      <div class="feature-section">
+        <div class="feature-layout">
+          <div>
+            <div class="label mb-4"><span class="label-dot"></span>Treasury Intelligence</div>
+            <h2 style="font-size:clamp(28px,3vw,42px);margin-bottom:16px;">Cash position. Settlement forecast. Real time.</h2>
+            <p class="text-lead mb-6">Stop guessing your cash position. ACHPay's treasury dashboard gives you a live view of in-flight payments, pending settlements, and projected account balances — days in advance.</p>
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:12px;">
+              <li class="trust-item"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="#00875a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 7-day settlement forecast</li>
+              <li class="trust-item"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="#00875a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Multi-account cash aggregation</li>
+              <li class="trust-item"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="#00875a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Exportable to Excel / CSV</li>
+              <li class="trust-item"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="#00875a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> ERP-ready data feeds</li>
+            </ul>
+          </div>
+          <div class="feature-visual">
+            <div style="font-size:12px;color:var(--ink-60);margin-bottom:16px;font-family:var(--font-mono);">TREASURY FORECAST — Next 7 days</div>
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;align-items:flex-end;height:100px;margin-bottom:8px;">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <div style="background:var(--accent);border-radius:3px;width:100%;height:45px;"></div>
+                <span style="font-size:9px;color:var(--ink-60);">Mon</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <div style="background:var(--accent);border-radius:3px;width:100%;height:68px;"></div>
+                <span style="font-size:9px;color:var(--ink-60);">Tue</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <div style="background:var(--accent-dim);border:1px dashed var(--accent);border-radius:3px;width:100%;height:52px;"></div>
+                <span style="font-size:9px;color:var(--ink-60);">Wed</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <div style="background:var(--accent-dim);border:1px dashed var(--accent);border-radius:3px;width:100%;height:80px;"></div>
+                <span style="font-size:9px;color:var(--ink-60);">Thu</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <div style="background:var(--accent-dim);border:1px dashed var(--accent);border-radius:3px;width:100%;height:38px;"></div>
+                <span style="font-size:9px;color:var(--ink-60);">Fri</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <div style="background:var(--paper-dark);border-radius:3px;width:100%;height:12px;"></div>
+                <span style="font-size:9px;color:var(--ink-60);">Sat</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <div style="background:var(--paper-dark);border-radius:3px;width:100%;height:12px;"></div>
+                <span style="font-size:9px;color:var(--ink-60);">Sun</span>
+              </div>
+            </div>
+            <div style="display:flex;gap:12px;margin-top:16px;">
+              <div style="flex:1;padding:12px;background:var(--paper);border:1px solid var(--border);border-radius:8px;">
+                <div style="font-size:10px;color:var(--ink-60);margin-bottom:4px;">Expected inflows</div>
+                <div style="font-family:var(--font-mono);font-size:16px;color:var(--green);">+$842,200</div>
+              </div>
+              <div style="flex:1;padding:12px;background:var(--paper);border:1px solid var(--border);border-radius:8px;">
+                <div style="font-size:10px;color:var(--ink-60);margin-bottom:4px;">Expected outflows</div>
+                <div style="font-family:var(--font-mono);font-size:16px;color:var(--amber);">−$215,000</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="final-cta">
+    <div class="container" style="position:relative;z-index:1;">
+      <h2 style="color:#fff;max-width:580px;margin:0 auto 20px;">Ready to see the platform in action?</h2>
+      <p style="color:rgba(255,255,255,0.45);font-size:18px;margin:0 auto 44px;">Our solutions team will walk through your specific use case and show you exactly how ACHPay handles your payment flows.</p>
+      <button class="btn btn-accent btn-xl" onclick="navigate('contact')">Book a Live Demo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     SECURITY PAGE
+════════════════════════════════════ -->
+<div class="page" id="page-security">
+  <section class="security-hero">
+    <div class="container">
+      <div class="label text-center mx-auto mb-4" style="justify-content:center;">
+        <span class="label-dot" style="background:var(--green)"></span>
+        Security & Compliance
+      </div>
+      <h1 style="font-size:clamp(40px,5vw,68px);letter-spacing:-0.03em;margin-bottom:20px;">Institutional-grade security</h1>
+      <p class="text-lead max-560 mx-auto text-center">ACHPay is built to pass the scrutiny of enterprise security teams, bank compliance officers, and Fortune 500 procurement processes.</p>
+
+      <div class="compliance-grid mt-16">
+        <div class="compliance-card">
+          <div class="compliance-logo">🔐</div>
+          <div class="compliance-name">SOC 2 Type II</div>
+          <div class="compliance-desc">Independently audited annually. Reports available under NDA for enterprise prospects.</div>
+        </div>
+        <div class="compliance-card">
+          <div class="compliance-logo">🏛️</div>
+          <div class="compliance-name">NACHA Certified</div>
+          <div class="compliance-desc">Third-party ACH Originator — fully compliant with NACHA Operating Rules and Guidelines.</div>
+        </div>
+        <div class="compliance-card">
+          <div class="compliance-logo">🔒</div>
+          <div class="compliance-name">AES-256 Encryption</div>
+          <div class="compliance-desc">Bank account data encrypted at rest and in transit. Routing numbers tokenized and never stored in plaintext.</div>
+        </div>
+        <div class="compliance-card">
+          <div class="compliance-logo">🛡️</div>
+          <div class="compliance-name">PCI DSS L1</div>
+          <div class="compliance-desc">Level 1 PCI compliance for any card-adjacent data handling in hybrid payment environments.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--surface);">
+    <div class="container">
+      <div class="grid-2" style="gap:48px;align-items:start;">
+        <div>
+          <h2 style="font-size:clamp(28px,3vw,44px);margin-bottom:20px;">How we protect your payment data</h2>
+          <p class="text-lead mb-8">Every layer of ACHPay's infrastructure is designed with security as a first principle — not an afterthought bolted on after deployment.</p>
+          <div style="display:flex;flex-direction:column;gap:20px;">
+            <div class="trust-card">
+              <div class="trust-card-title">Network & Infrastructure</div>
+              <div class="trust-card-body">Multi-region AWS deployment with VPC isolation, private subnets for all database tiers, and WAF protection on all public endpoints. DDoS mitigation via CloudFront and Shield Advanced.</div>
+            </div>
+            <div class="trust-card">
+              <div class="trust-card-title">Access Control</div>
+              <div class="trust-card-body">Mandatory MFA for all user and admin accounts. RBAC with least-privilege defaults. SAML and OIDC SSO support. All privileged access logged and reviewed quarterly.</div>
+            </div>
+            <div class="trust-card">
+              <div class="trust-card-title">Data Protection</div>
+              <div class="trust-card-body">Account numbers tokenized at ingestion. Tokens are never reversible outside secure enclaves. Separate encryption keys per customer, rotated annually. Zero plaintext storage of banking credentials.</div>
+            </div>
+            <div class="trust-card">
+              <div class="trust-card-title">Vulnerability Management</div>
+              <div class="trust-card-body">Continuous SAST/DAST scanning, quarterly penetration testing by third-party firms, and a public bug bounty program. All critical findings remediated within 72 hours.</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:24px;">
+            <div style="font-size:13px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--ink-60);margin-bottom:20px;">Uptime & Reliability</div>
+            <div style="font-family:var(--font-display);font-size:52px;letter-spacing:-0.04em;color:var(--ink);margin-bottom:4px;">99.98%</div>
+            <div style="font-size:14px;color:var(--ink-60);margin-bottom:24px;">Contractual SLA — last 24 months</div>
+            <div style="display:flex;gap:6px;margin-bottom:8px;">
+              <div style="flex:1;height:8px;background:var(--green);border-radius:2px;"></div>
+              <div style="flex:1;height:8px;background:var(--green);border-radius:2px;"></div>
+              <div style="flex:1;height:8px;background:var(--green);border-radius:2px;"></div>
+              <div style="flex:1;height:8px;background:var(--green);border-radius:2px;"></div>
+              <div style="flex:1;height:8px;background:var(--green);border-radius:2px;"></div>
+              <div style="flex:1;height:8px;background:var(--green);border-radius:2px;"></div>
+              <div style="flex:1;height:8px;background:var(--green);border-radius:2px;"></div>
+              <div style="flex:1;height:8px;background:var(--green);border-radius:2px;"></div>
+              <div style="width:10px;height:8px;background:var(--amber-light);border-radius:2px;border:1px solid var(--amber);"></div>
+              <div style="flex:1;height:8px;background:var(--green);border-radius:2px;"></div>
+              <div style="flex:1;height:8px;background:var(--green);border-radius:2px;"></div>
+              <div style="flex:1;height:8px;background:var(--green);border-radius:2px;"></div>
+            </div>
+            <div style="font-size:11px;color:var(--ink-60);">1 partial incident in 24 months — 18 min degraded performance. Full post-mortem published.</div>
+          </div>
+
+          <div class="card">
+            <div style="font-size:13px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--ink-60);margin-bottom:20px;">Fraud Prevention</div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:14px;">
+                <span>Bank account verification (IAV)</span>
+                <span class="badge badge-green">Active</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:14px;">
+                <span>Velocity controls & limits</span>
+                <span class="badge badge-green">Active</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:14px;">
+                <span>OFAC screening</span>
+                <span class="badge badge-green">Active</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:14px;">
+                <span>Anomaly detection (ML)</span>
+                <span class="badge badge-green">Active</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:14px;">
+                <span>Return rate monitoring</span>
+                <span class="badge badge-green">Active</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ════════════════════════════════════
+     HOW IT WORKS PAGE
+════════════════════════════════════ -->
+<div class="page" id="page-how-it-works">
+  <section class="hiw-hero">
+    <div class="container">
+      <div class="label text-center mx-auto mb-4" style="justify-content:center;">
+        <span class="label-dot"></span>
+        How It Works
+      </div>
+      <h1 style="font-size:clamp(40px,5vw,68px);letter-spacing:-0.03em;margin-bottom:20px;">Up and running in days, not months</h1>
+      <p class="text-lead max-560 mx-auto text-center">ACHPay is designed to fit into your existing financial stack — not replace it. Implementation is fast, secure, and guided by our team.</p>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--surface);border-top:1px solid var(--border);">
+    <div class="container">
+      <div class="hiw-steps">
+        <div class="hiw-step">
+          <div class="hiw-step-num">01</div>
+          <div class="hiw-step-content">
+            <div class="hiw-step-title">Onboarding & underwriting</div>
+            <div class="hiw-step-body">Submit your business and banking information. Our compliance team reviews your application — typically within 24–48 hours. We check entity verification, business purpose, and transaction profile to ensure smooth ODFI sponsorship. For enterprises, a dedicated onboarding manager guides the entire process.</div>
+          </div>
+        </div>
+        <div class="hiw-step">
+          <div class="hiw-step-num">02</div>
+          <div class="hiw-step-content">
+            <div class="hiw-step-title">API integration or no-code setup</div>
+            <div class="hiw-step-body">Most teams integrate via our REST API using official SDKs for Node.js, Python, Ruby, Go, and Java. If you prefer a no-code setup, the ACHPay dashboard supports manual payment initiation, bulk CSV uploads, and workflow automation without writing a line of code. Our sandbox environment mirrors production exactly, so testing is deterministic.</div>
+          </div>
+        </div>
+        <div class="hiw-step">
+          <div class="hiw-step-num">03</div>
+          <div class="hiw-step-content">
+            <div class="hiw-step-title">Connect your bank accounts</div>
+            <div class="hiw-step-body">Link your bank accounts via Instant Account Verification (IAV) — a real-time connection that confirms ownership and routing details without test deposits. For enterprise configurations, micro-deposit verification is also available. Multiple accounts and entities are supported under a single ACHPay organization.</div>
+          </div>
+        </div>
+        <div class="hiw-step">
+          <div class="hiw-step-num">04</div>
+          <div class="hiw-step-content">
+            <div class="hiw-step-title">Initiate your first payment</div>
+            <div class="hiw-step-body">With a single API call or dashboard action, initiate an ACH debit or credit. Specify the amount, entry class (CCD, PPD, etc.), settlement speed, and any reference data for reconciliation. ACHPay queues and transmits your file to the ODFI at the next available NACHA window.</div>
+          </div>
+        </div>
+        <div class="hiw-step">
+          <div class="hiw-step-num">05</div>
+          <div class="hiw-step-content">
+            <div class="hiw-step-title">Settlement and reconciliation</div>
+            <div class="hiw-step-body">As payments settle, ACHPay updates status in real time via webhooks and the dashboard. Our reconciliation engine matches settled amounts to your reference data automatically. Any returns are surfaced immediately with the NACHA return code, plain-language explanation, and retry options.</div>
+          </div>
+        </div>
+        <div class="hiw-step">
+          <div class="hiw-step-num">06</div>
+          <div class="hiw-step-content">
+            <div class="hiw-step-title">Reporting & optimization</div>
+            <div class="hiw-step-body">Access daily settlement reports, transaction-level audit logs, and monthly fee summaries — all exportable for your ERP or accounting software. Our analytics surface return rates, settlement timing patterns, and payment success metrics so your team can continually optimize payment operations.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--surface-alt);">
+    <div class="container text-center">
+      <h2 style="margin-bottom:16px;">Typical implementation timeline</h2>
+      <p class="text-lead max-560 mx-auto mb-12">From signed agreement to processing live payments.</p>
+      <div class="grid-4" style="text-align:left;">
+        <div class="card">
+          <div style="font-family:var(--font-mono);font-size:11px;color:var(--accent);letter-spacing:0.06em;margin-bottom:12px;">DAY 1–2</div>
+          <div style="font-weight:500;margin-bottom:8px;">Onboarding & compliance</div>
+          <div style="font-size:13px;color:var(--ink-60);">Business verification, ODFI underwriting, and account setup.</div>
+        </div>
+        <div class="card">
+          <div style="font-family:var(--font-mono);font-size:11px;color:var(--accent);letter-spacing:0.06em;margin-bottom:12px;">DAY 3–5</div>
+          <div style="font-weight:500;margin-bottom:8px;">Sandbox integration</div>
+          <div style="font-size:13px;color:var(--ink-60);">API integration, webhook setup, and test transaction validation.</div>
+        </div>
+        <div class="card">
+          <div style="font-family:var(--font-mono);font-size:11px;color:var(--accent);letter-spacing:0.06em;margin-bottom:12px;">DAY 6–8</div>
+          <div style="font-weight:500;margin-bottom:8px;">Production readiness</div>
+          <div style="font-size:13px;color:var(--ink-60);">Production credentials, bank account verification, and pre-launch review.</div>
+        </div>
+        <div class="card">
+          <div style="font-family:var(--font-mono);font-size:11px;color:var(--accent);letter-spacing:0.06em;margin-bottom:12px;">DAY 10+</div>
+          <div style="font-weight:500;margin-bottom:8px;">Live payments</div>
+          <div style="font-size:13px;color:var(--ink-60);">First live ACH transactions processed. Your card fee era ends here.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ════════════════════════════════════
+     USE CASES PAGE
+════════════════════════════════════ -->
+<div class="page" id="page-use-cases">
+  <section style="padding-top:calc(var(--nav-h) + 60px);padding-bottom:60px;">
+    <div class="container">
+      <div class="label mb-4"><span class="label-dot"></span>Use Cases</div>
+      <h1 style="font-size:clamp(40px,5vw,68px);letter-spacing:-0.03em;max-width:680px;margin-bottom:20px;">ACHPay in your industry</h1>
+      <p class="text-lead max-680">Whether you're moving $10K or $10M, ACHPay fits the payment workflows your business actually uses.</p>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--surface);border-top:1px solid var(--border);">
+    <div class="container">
+      <div style="display:flex;flex-direction:column;gap:60px;">
+
+        <div class="feature-layout">
+          <div>
+            <div class="badge badge-blue mb-6">B2B SaaS</div>
+            <h2 style="font-size:clamp(26px,3vw,40px);margin-bottom:16px;">Eliminate processing fees on subscription revenue</h2>
+            <p class="text-lead mb-6">SaaS companies processing $1M+ in annual subscriptions are often paying $25,000–$45,000 in card fees annually. ACHPay brings that to under $2,000.</p>
+            <p style="font-size:15px;color:var(--ink-60);line-height:1.7;">Offer ACH as a payment option at checkout for annual and quarterly plans. Enterprise customers often prefer ACH for invoice payments — it reduces card reconciliation overhead on their end, too. ACHPay supports both push and pull ACH, mandate collection, and automated retry for failed transactions.</p>
+            <div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap;">
+              <span class="badge badge-green">Annual plan collections</span>
+              <span class="badge badge-green">Usage-based billing</span>
+              <span class="badge badge-green">Enterprise invoice ACH</span>
+            </div>
+          </div>
+          <div class="card" style="background:var(--surface-alt);">
+            <div style="font-size:12px;color:var(--ink-60);font-family:var(--font-mono);margin-bottom:20px;">CASE STUDY — B2B SaaS / $8M ARR</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+              <div>
+                <div style="font-size:11px;color:var(--ink-60);margin-bottom:4px;">Before ACHPay</div>
+                <div style="font-family:var(--font-display);font-size:28px;color:var(--amber);">$19,400<span style="font-size:14px;font-family:var(--font-body);">/mo</span></div>
+                <div style="font-size:12px;color:var(--ink-60);">Card processing fees</div>
+              </div>
+              <div>
+                <div style="font-size:11px;color:var(--ink-60);margin-bottom:4px;">After ACHPay</div>
+                <div style="font-family:var(--font-display);font-size:28px;color:var(--green);">$840<span style="font-size:14px;font-family:var(--font-body);">/mo</span></div>
+                <div style="font-size:12px;color:var(--ink-60);">ACH fees total</div>
+              </div>
+            </div>
+            <div class="savings-highlight">Saved $222,720 annually · +2.8% gross margin</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="feature-layout reverse">
+          <div>
+            <div class="badge badge-blue mb-6">Marketplaces</div>
+            <h2 style="font-size:clamp(26px,3vw,40px);margin-bottom:16px;">Scale vendor payouts without scaling fees</h2>
+            <p class="text-lead mb-6">Paying 1,000 sellers $200 each costs $200,000 in ACH fees — or $58,030 in card fees. The choice is obvious.</p>
+            <p style="font-size:15px;color:var(--ink-60);line-height:1.7;">ACHPay's batch disbursement API can initiate thousands of payouts in a single API call, with per-payout tracking, webhook confirmation, and automated reconciliation. Support for both standard and Same-Day ACH gives you flexibility on settlement timing based on your payout schedule.</p>
+            <div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap;">
+              <span class="badge badge-green">Batch disbursements</span>
+              <span class="badge badge-green">Seller payouts</span>
+              <span class="badge badge-green">Same-day settlement</span>
+            </div>
+          </div>
+          <div class="card" style="background:var(--surface-alt);">
+            <div style="font-size:12px;color:var(--ink-60);font-family:var(--font-mono);margin-bottom:20px;">CASE STUDY — B2B Marketplace</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+              <div>
+                <div style="font-size:11px;color:var(--ink-60);margin-bottom:4px;">Monthly payouts</div>
+                <div style="font-family:var(--font-display);font-size:28px;">3,200</div>
+                <div style="font-size:12px;color:var(--ink-60);">to vendors & sellers</div>
+              </div>
+              <div>
+                <div style="font-size:11px;color:var(--ink-60);margin-bottom:4px;">Monthly ACH cost</div>
+                <div style="font-family:var(--font-display);font-size:28px;color:var(--green);">$16,000</div>
+                <div style="font-size:12px;color:var(--ink-60);">at $5 cap per transfer</div>
+              </div>
+            </div>
+            <div class="savings-highlight">Previous wire cost: $128,000/mo · Saving $112,000</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="feature-layout">
+          <div>
+            <div class="badge badge-blue mb-6">Property Management</div>
+            <h2 style="font-size:clamp(26px,3vw,40px);margin-bottom:16px;">Automate rent collection across your entire portfolio</h2>
+            <p class="text-lead mb-6">Card surcharges on rent payments frustrate tenants and erode collections. ACHPay collects rent via ACH — lower cost, higher success rate, and automatic reconciliation by unit.</p>
+            <p style="font-size:15px;color:var(--ink-60);line-height:1.7;">Set up recurring ACH debits for monthly rent collection, one-time charges for deposits, and on-demand debits for maintenance fees. Our failed payment retry logic and NSF handling reduce delinquency without requiring management intervention.</p>
+          </div>
+          <div class="card" style="background:var(--surface-alt);">
+            <div style="font-size:12px;color:var(--ink-60);font-family:var(--font-mono);margin-bottom:16px;">RENT COLLECTION — October 2024</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--border);">
+                <span>Units collected</span>
+                <span class="font-medium">847 / 900</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--border);">
+                <span>Total collected</span>
+                <span class="font-medium">$1,694,200</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--border);">
+                <span>ACHPay fees</span>
+                <span class="font-medium" style="color:var(--green);">$4,235</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;">
+                <span>Equivalent card cost</span>
+                <span class="font-medium" style="color:var(--amber);">$49,142</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ════════════════════════════════════
+     ABOUT PAGE
+════════════════════════════════════ -->
+<div class="page" id="page-about">
+  <section class="about-hero">
+    <div class="container">
+      <div class="label mb-4"><span class="label-dot"></span>About ACHPay</div>
+      <h1 style="font-size:clamp(40px,5vw,68px);letter-spacing:-0.03em;max-width:760px;margin-bottom:28px;">We built the payment infrastructure we wish existed when we were running finance teams</h1>
+      <p class="text-lead max-680">ACHPay was founded by former finance executives and payments engineers who spent years watching margin disappear into card network fees. We built a better way.</p>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--surface);border-top:1px solid var(--border);">
+    <div class="container">
+      <div class="grid-2" style="gap:60px;align-items:start;">
+        <div>
+          <h2 style="font-size:clamp(28px,3vw,42px);margin-bottom:20px;">The problem we're solving</h2>
+          <p style="font-size:16px;color:var(--ink-60);line-height:1.8;margin-bottom:20px;">Card payment processing fees were designed in an era when payment infrastructure was genuinely expensive to build and operate. They have not declined meaningfully in 30 years — despite the underlying cost of moving money dropping by 90%.</p>
+          <p style="font-size:16px;color:var(--ink-60);line-height:1.8;margin-bottom:20px;">The ACH network — the same infrastructure used by the US Federal Reserve to move trillions of dollars daily — is available to every business. But accessing it directly requires ODFI relationships, NACHA compliance expertise, and engineering resources that most companies don't have.</p>
+          <p style="font-size:16px;color:var(--ink-60);line-height:1.8;">ACHPay provides that access, with an enterprise-grade API layer, a compliance framework, and a $5 maximum fee — so any business can stop subsidizing Visa and Mastercard's margins.</p>
+        </div>
+        <div>
+          <div class="card mb-6" style="background:var(--ink);color:#fff;border:none;">
+            <div style="font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:12px;">Our founding thesis</div>
+            <p style="font-size:18px;line-height:1.7;font-style:italic;font-family:var(--font-display);">"Every dollar paid in card processing fees above $5 is a voluntary donation to a payment network. ACHPay ends that donation."</p>
+            <div style="margin-top:16px;font-size:13px;color:rgba(255,255,255,0.4);">— ACHPay founding team, 2021</div>
+          </div>
+
+          <div class="stat-row" style="margin-top:0;">
+            <div class="stat-cell">
+              <div class="stat-value">2021</div>
+              <div class="stat-label">Founded</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-value">$5</div>
+              <div class="stat-label">Fee cap, always</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-value">48</div>
+              <div class="stat-label">Team members</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-value">SF</div>
+              <div class="stat-label">Headquarters</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="team-grid" style="margin-top:80px;">
+        <div class="team-card">
+          <div class="team-avatar">AK</div>
+          <div class="team-name">Alex Kim</div>
+          <div class="team-role">CEO & Co-Founder</div>
+          <div style="font-size:12px;color:var(--ink-60);line-height:1.6;">Former VP Finance at Stripe. 12 years in payments infrastructure.</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar">SR</div>
+          <div class="team-name">Sarah Rodriguez</div>
+          <div class="team-role">CTO & Co-Founder</div>
+          <div style="font-size:12px;color:var(--ink-60);line-height:1.6;">Previously Staff Engineer at Modern Treasury. ACH systems architect.</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar">MW</div>
+          <div class="team-name">Marcus Williams</div>
+          <div class="team-role">Chief Compliance Officer</div>
+          <div style="font-size:12px;color:var(--ink-60);line-height:1.6;">15 years in bank compliance and NACHA regulatory affairs.</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar">JP</div>
+          <div class="team-name">Julia Park</div>
+          <div class="team-role">VP Sales & GTM</div>
+          <div style="font-size:12px;color:var(--ink-60);line-height:1.6;">Previously led enterprise sales at Brex and Bill.com.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ════════════════════════════════════
+     CONTACT PAGE
+════════════════════════════════════ -->
+<div class="page" id="page-contact">
+  <section class="contact-hero">
+    <div class="container">
+      <div class="contact-grid">
+        <div>
+          <div class="label mb-4"><span class="label-dot"></span>Get in Touch</div>
+          <h1 style="font-size:clamp(36px,5vw,60px);letter-spacing:-0.03em;margin-bottom:20px;">Let's talk about your payment costs</h1>
+          <p class="text-lead mb-8">Our enterprise solutions team will model your current payment costs and show you exactly what ACHPay would save — before you make any commitment.</p>
+
+          <div style="display:flex;flex-direction:column;gap:20px;margin-bottom:40px;">
+            <div style="display:flex;gap:14px;align-items:flex-start;">
+              <div style="width:40px;height:40px;background:var(--accent-dim);border-radius:8px;display:grid;place-items:center;color:var(--accent);flex-shrink:0;">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="4" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M2 7l7 5 7-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </div>
+              <div>
+                <div style="font-weight:500;margin-bottom:2px;">Email</div>
+                <div style="font-size:14px;color:var(--ink-60);">enterprise@achpay.ai</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:14px;align-items:flex-start;">
+              <div style="width:40px;height:40px;background:var(--accent-dim);border-radius:8px;display:grid;place-items:center;color:var(--accent);flex-shrink:0;">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M6 9h6M9 6v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </div>
+              <div>
+                <div style="font-weight:500;margin-bottom:2px;">Schedule directly</div>
+                <div style="font-size:14px;color:var(--ink-60);">calendly.com/achpay/demo</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:14px;align-items:flex-start;">
+              <div style="width:40px;height:40px;background:var(--accent-dim);border-radius:8px;display:grid;place-items:center;color:var(--accent);flex-shrink:0;">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 3h12v10H3z" stroke="currentColor" stroke-width="1.5"/><path d="M3 13l3-3M15 13l-3-3M3 3l6 6 6-6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              </div>
+              <div>
+                <div style="font-weight:500;margin-bottom:2px;">Headquarters</div>
+                <div style="font-size:14px;color:var(--ink-60);">340 Pine Street, Suite 800<br>San Francisco, CA 94104</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="background:var(--surface-alt);">
+            <div style="font-size:13px;font-weight:600;margin-bottom:12px;">What to expect</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="display:flex;gap:10px;font-size:13px;color:var(--ink-60);">
+                <span style="color:var(--green);flex-shrink:0;">✓</span> 30-minute call with a senior solutions engineer
+              </div>
+              <div style="display:flex;gap:10px;font-size:13px;color:var(--ink-60);">
+                <span style="color:var(--green);flex-shrink:0;">✓</span> Custom savings model based on your volume
+              </div>
+              <div style="display:flex;gap:10px;font-size:13px;color:var(--ink-60);">
+                <span style="color:var(--green);flex-shrink:0;">✓</span> Live product walkthrough
+              </div>
+              <div style="display:flex;gap:10px;font-size:13px;color:var(--ink-60);">
+                <span style="color:var(--green);flex-shrink:0;">✓</span> No commitment, no pressure
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card" style="box-shadow:var(--shadow-lg);">
+            <h3 style="font-size:22px;margin-bottom:24px;">Schedule a Demo</h3>
+
+            <div class="form-field">
+              <label class="form-label">Full Name</label>
+              <input class="form-input" type="text" placeholder="Sarah Chen" />
+            </div>
+
+            <div class="form-field">
+              <label class="form-label">Work Email</label>
+              <input class="form-input" type="email" placeholder="sarah@company.com" />
+            </div>
+
+            <div class="form-field">
+              <label class="form-label">Company</label>
+              <input class="form-input" type="text" placeholder="Acme Corporation" />
+            </div>
+
+            <div class="grid-2" style="gap:16px;">
+              <div class="form-field">
+                <label class="form-label">Your Role</label>
+                <select class="form-input">
+                  <option>CFO</option>
+                  <option>Controller</option>
+                  <option>VP Finance</option>
+                  <option>Treasury Manager</option>
+                  <option>Payment Operations</option>
+                  <option>Engineering</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Monthly Volume</label>
+                <select class="form-input">
+                  <option>Under $100K</option>
+                  <option>$100K – $500K</option>
+                  <option>$500K – $2M</option>
+                  <option>$2M – $10M</option>
+                  <option>$10M+</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label class="form-label">Tell us about your current payment setup (optional)</label>
+              <textarea class="form-input" placeholder="What payment processor are you using? What's driving your interest in ACH?"></textarea>
+            </div>
+
+            <button class="btn btn-accent btn-lg w-full" style="justify-content:center;margin-top:8px;">
+              Schedule Demo
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+
+            <p style="text-align:center;font-size:12px;color:var(--ink-60);margin-top:14px;">We respond within 2 business hours. Your information is never shared.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <h4>ACHPay.ai</h4>
+        <p>Enterprise ACH payment infrastructure with a $5 maximum per transaction. Built for finance teams who have run the analysis.</p>
+        <div style="display:flex;gap:10px;">
+          <span class="badge" style="background:rgba(0,214,143,0.08);color:#00d68f;border-color:rgba(0,214,143,0.2);font-size:11px;">SOC 2 Type II</span>
+          <span class="badge" style="background:rgba(0,214,143,0.08);color:#00d68f;border-color:rgba(0,214,143,0.2);font-size:11px;">NACHA Certified</span>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Product</h5>
+        <ul class="footer-links">
+          <li><a onclick="navigate('features')">Features</a></li>
+          <li><a onclick="navigate('pricing')">Pricing</a></li>
+          <li><a onclick="navigate('security')">Security</a></li>
+          <li><a onclick="navigate('how-it-works')">How It Works</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Solutions</h5>
+        <ul class="footer-links">
+          <li><a onclick="navigate('use-cases')">B2B SaaS</a></li>
+          <li><a onclick="navigate('use-cases')">Marketplaces</a></li>
+          <li><a onclick="navigate('use-cases')">Property Mgmt</a></li>
+          <li><a onclick="navigate('use-cases')">Payroll & HR</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Company</h5>
+        <ul class="footer-links">
+          <li><a onclick="navigate('about')">About</a></li>
+          <li><a onclick="navigate('contact')">Contact</a></li>
+          <li><a>Careers</a></li>
+          <li><a>Blog</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Developers</h5>
+        <ul class="footer-links">
+          <li><a>API Docs</a></li>
+          <li><a>SDK Reference</a></li>
+          <li><a>Webhooks</a></li>
+          <li><a>Status Page</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 ACHPay, Inc. All rights reserved. ACH processing through NACHA-compliant ODFI partnerships.</p>
+      <div class="footer-legal">
+        <a>Privacy Policy</a>
+        <a>Terms of Service</a>
+        <a>Security</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── NAVIGATION ──────────────────────────────────
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('page-' + page);
+  if (target) {
+    target.classList.add('active');
+    window.scrollTo(0, 0);
+  }
+}
+
+// ── CALCULATOR ──────────────────────────────────
+function updateCalc() {
+  const volume = parseFloat(document.getElementById('calc-volume').value) || 0;
+  const avgTxn = parseFloat(document.getElementById('calc-avg').value) || 1;
+  const rate = parseFloat(document.getElementById('calc-rate').value) || 0;
+
+  const numTxns = volume / avgTxn;
+  const cardFee = volume * (rate / 100) + numTxns * 0.30;
+  const achFee = Math.min(numTxns * 5, numTxns * (volume / numTxns) * 0.005);
+  const achFeeCapped = numTxns * Math.min(5, avgTxn * 0.005);
+  const monthly = cardFee - achFeeCapped;
+  const annual = monthly * 12;
+
+  document.getElementById('calc-card-fee').textContent = '$' + Math.round(cardFee).toLocaleString();
+  document.getElementById('calc-ach-fee').textContent = '$' + Math.round(achFeeCapped).toLocaleString();
+  document.getElementById('calc-monthly').textContent = '$' + Math.round(Math.max(0, monthly)).toLocaleString();
+  document.getElementById('calc-annual').textContent = '$' + Math.round(Math.max(0, annual)).toLocaleString();
+
+  // Update slider gradient
+  const slider = document.getElementById('calc-volume-slider');
+  const pct = (volume - parseInt(slider.min)) / (parseInt(slider.max) - parseInt(slider.min)) * 100;
+  slider.style.background = `linear-gradient(90deg, var(--accent) ${pct}%, var(--border-strong) ${pct}%)`;
+}
+
+function syncSlider(type) {
+  if (type === 'volume') {
+    const val = document.getElementById('calc-volume-slider').value;
+    document.getElementById('calc-volume').value = val;
+  } else {
+    const val = document.getElementById('calc-avg-slider').value;
+    document.getElementById('calc-avg').value = val;
+  }
+  updateCalc();
+}
+
+// ── FAQ ─────────────────────────────────────────
+function toggleFaq(el) {
+  const isOpen = el.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(f => f.classList.remove('open'));
+  if (!isOpen) el.classList.add('open');
+}
+
+// ── INIT ────────────────────────────────────────
+updateCalc();
+</script>
+</body>
+</html>
